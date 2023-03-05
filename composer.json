@@ -1,0 +1,28 @@
+{
+    "name": "slim/ryalize",
+    "type": "project",
+    "description": "Ryalize application based on Slim Framework V4",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Amr Samra",
+            "email": "amr@slvi.net"
+        }
+    ],
+    "keywords": [
+        "slim",
+        "framework",
+        "psr-7",
+        "psr-15"
+    ],
+    "require": {
+        "slim/slim": "4.*",
+        "slim/psr7": "^1.6",
+        "nyholm/psr7": "^1.5",
+        "nyholm/psr7-server": "^1.0",
+        "guzzlehttp/psr7": "^2",
+        "laminas/laminas-diactoros": "^2.24"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
