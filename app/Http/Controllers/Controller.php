@@ -9,7 +9,7 @@ class Controller
 {
     public function __invoke(Request $request, Response $response, ...$args): Response
     {
-        $response->getBody()->write(":: __invoke ::");
+        $response->getBody()->write(":: invoke :: Home page ::");
         return $response;
     }
 

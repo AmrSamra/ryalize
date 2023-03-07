@@ -11,15 +11,15 @@ if (!function_exists('dd')) {
      */
     function dd(...$args): void
     {
-        foreach ($args as $arg) {
+        $print = [];
+        foreach ($args as $i => $arg) {
             if (is_object($arg)) {
-                $arg = serialize($arg);
+                $print["arg_{$i}"] = serialize($arg);
             }
-            if (is_array($arg)) {
-                $arg = json_encode($arg, JSON_PRETTY_PRINT);
-            }
-            echo '<pre><p style="background-color: black; color:#30fa02">', $arg, '<p></pre>';
+            $print["arg_{$i}"] = $arg;
         }
+        echo '<pre><p style="background-color: black; color:#30fa02">', json_encode($print, JSON_PRETTY_PRINT), '<p></pre>';
+
         die();
     }
 }

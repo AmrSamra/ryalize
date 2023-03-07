@@ -7,9 +7,9 @@ use Slim\Routing\RouteCollectorProxy;
 
 class Route
 {
-    public static App $app;
+    public static RouteCollectorProxy $app;
 
-    public static function setup(App &$app)
+    public static function setup(RouteCollectorProxy &$app)
     {
         Self::$app = $app;
         return $app;
@@ -18,18 +18,30 @@ class Route
     public static function __callStatic(string $method, array $parameters = [])
     {
         $app = Self::$app;
+        [$prefix, $callback] = $parameters;
+
 
         if ($method == 'resource') {
-            [$prefix, $controller] = $parameters;
-            return $app->group('/' . $prefix, function (RouteCollectorProxy $group) use ($controller) {
-                $group->get('', $controller, 'index')->setName('index');
-                $group->get('/{model}', $controller, 'show')->setName('show');
-                $group->post('', $controller, 'store')->setName('store');
-                $group->put('/{model}', $controller, 'update')->setName('update');
-                $group->delete('/{model}', $controller, 'destroy')->setName('destroy');
+            return Route::group($prefix, function (RouteCollectorProxy $group) use ($callback, $prefix) {
+                Route::get('', [$callback, 'index'])->setName("{$prefix}.index");
+                Route::post('', [$callback, 'store'])->setName("{$prefix}.store");
+                Route::get('{id}', [$callback, 'show'])->setName("{$prefix}.show");
+                Route::put('{id}', [$callback, 'update'])->setName("{$prefix}.update");
+                Route::delete('{id}', [$callback, 'destroy'])->setName("{$prefix}.destroy");
             });
         }
 
-        return $app->$method(...$parameters);
+        $path = $prefix ? "/{$prefix}" : '';
+
+        if ($method == 'group') {
+            return $app->group($path, function (RouteCollectorProxy $group) use ($callback, &$app) {
+                Route::setup($group);
+                $routing = $callback($group);
+                Route::setup($app);
+                return $routing;
+            });
+        }
+
+        return $app->$method($path, $callback);
     }
 }

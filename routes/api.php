@@ -1,8 +1,14 @@
 <?php
 
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\UserController;
 use App\Infrastructure\Route;
 
-Route::get('/api', HomeController::class, 'index')->setName('home');
+Route::group('auth', function () {
+    Route::post('login', [AuthController::class, 'login'])->setName('login');
+    Route::post('register', [AuthController::class, 'register'])->setName('register');
+
+    Route::get('logout', [AuthController::class, 'logout'])->setName('logout');
+});
+
 Route::resource('users', UserController::class);
