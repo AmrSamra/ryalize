@@ -11,14 +11,13 @@ if (!function_exists('dd')) {
      */
     function dd(...$args): void
     {
-        $print = [];
-        foreach ($args as $i => $arg) {
+        $print = array_map(function ($arg) {
             if (is_object($arg)) {
-                $print["arg_{$i}"] = serialize($arg);
+                return serialize($arg);
             }
-            $print["arg_{$i}"] = $arg;
-        }
-        echo '<pre><p style="background-color: black; color:#30fa02">', json_encode($print, JSON_PRETTY_PRINT), '<p></pre>';
+            return $arg;
+        }, $args);
+        echo '<pre>', json_encode($print, JSON_PRETTY_PRINT), '</pre>';
 
         die();
     }
@@ -92,6 +91,8 @@ if (!function_exists('json')) {
         ];
 
         $response->getBody()->write(json_encode($body));
-        return $response->withHeader('Content-Type', 'application/json');
+        return $response
+            ->withStatus($code)
+            ->withHeader('Content-Type', 'application/json');
     }
 }

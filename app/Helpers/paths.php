@@ -1,5 +1,19 @@
 <?php
 
+if (!function_exists('env')) {
+    /**
+     * Gets the value of an environment variable.
+     *
+     * @param  string  $key
+     * @param  mixed  $default
+     * @return string
+     */
+    function env($key = '', $default = null)
+    {
+        return $_ENV[$key] ?? $default;
+    }
+}
+
 if (!function_exists('base_path')) {
     /**
      * Get the path to the base of the install.

@@ -8,9 +8,9 @@ class ErrorMiddlewareServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->addErrorMiddleware(
-            config('middleware.errors.display'),
-            config('middleware.errors.log'),
-            config('middleware.errors.log_details')
+            env('APP_DEBUG', false) == 'true',
+            env('LOG_ERRORS', false) == 'true',
+            env('LOG_ERROR_DETAILS', false) == 'true'
         );
     }
 

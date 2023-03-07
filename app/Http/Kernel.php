@@ -43,7 +43,9 @@ class Kernel
      *
      * @var array<string, class-string|string>
      */
-    protected $middlewareAliases = [];
+    public static $middlewareAliases = [
+        'api' => \App\Http\Middleware\ApiMiddleware::class,
+    ];
 
 
     /**
@@ -59,7 +61,12 @@ class Kernel
     ];
 
 
-    public function boot()
+    /**
+     * Bootstrap the application for HTTP requests.
+     *
+     * @return void
+     */
+    public function boot(): void
     {
         \App\Providers\ServiceProvider::setup($this->app, $this->providers);
     }

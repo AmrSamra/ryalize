@@ -22,7 +22,8 @@
         "nyholm/psr7-server": "^1.0",
         "guzzlehttp/psr7": "^2",
         "laminas/laminas-diactoros": "^2.24",
-        "php-di/slim-bridge": "^3.3"
+        "php-di/slim-bridge": "^3.3",
+        "vlucas/phpdotenv": "^5.5"
     },
     "autoload": {
         "files": [
@@ -37,6 +38,11 @@
         "psr-4": {
             "Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ]
     },
     "minimum-stability": "stable",
     "prefer-stable": true

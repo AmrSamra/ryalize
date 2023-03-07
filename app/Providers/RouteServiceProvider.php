@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Infrastructure\Middleware;
 use App\Infrastructure\Route;
 use Slim\Routing\RouteCollectorProxy;
 
@@ -27,7 +28,7 @@ class RouteServiceProvider extends ServiceProvider
         if (file_exists(routes_path('api.php'))) {
             Route::group('api', function (RouteCollectorProxy $group) {
                 require routes_path('api.php');
-            });
+            }, ['middleware' => 'api']);
         }
     }
 }

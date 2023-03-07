@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure;
 
+use App\Http\Kernel;
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
 
@@ -18,7 +19,7 @@ class Route
     public static function __callStatic(string $method, array $parameters = [])
     {
         $app = Self::$app;
-        [$prefix, $callback] = $parameters;
+        [$prefix, $callback, $options] = $parameters;
 
 
         if ($method == 'resource') {
@@ -34,12 +35,24 @@ class Route
         $path = $prefix ? "/{$prefix}" : '';
 
         if ($method == 'group') {
-            return $app->group($path, function (RouteCollectorProxy $group) use ($callback, &$app) {
+            $group = $app->group($path, function (RouteCollectorProxy $group) use ($callback, &$app) {
                 Route::setup($group);
                 $routing = $callback($group);
                 Route::setup($app);
                 return $routing;
             });
+
+            $aliases = $options['middleware'] ?? [];
+            if (is_string($aliases)) {
+                $aliases = [$aliases];
+            }
+
+            array_walk($aliases, function (string $alias) use ($group) {
+                $middleware = Kernel::$middlewareAliases[$alias] ?? $alias;
+                $group->add($middleware);
+            });
+
+            return $group;
         }
 
         return $app->$method($path, $callback);
