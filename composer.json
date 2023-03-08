@@ -40,6 +40,11 @@
         }
     },
     "scripts": {
+        "db:migrate": "php ./database/db_migrate.php",
+        "db:drop": "php ./database/db_drop.php",
+        "db:refresh": "php ./database/db_drop.php && php ./database/db_migrate.php",
+        "db:seed": "php ./database/db_seed.php",
+        "db:boot": "php ./database/db_drop.php && php ./database/db_migrate.php && php ./database/db_seed.php",
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ]

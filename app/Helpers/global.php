@@ -13,7 +13,12 @@ if (!function_exists('dd')) {
     {
         $print = array_map(function ($arg) {
             if (is_object($arg)) {
-                return serialize($arg);
+                try {
+                    $object = serialize($arg);
+                } catch (\Exception $e) {
+                    $object = class_basename($arg);
+                }
+                return $object;
             }
             return $arg;
         }, $args);

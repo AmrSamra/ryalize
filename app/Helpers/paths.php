@@ -1,5 +1,7 @@
 <?php
 
+use Dotenv\Dotenv;
+
 if (!function_exists('env')) {
     /**
      * Gets the value of an environment variable.
@@ -8,8 +10,11 @@ if (!function_exists('env')) {
      * @param  mixed  $default
      * @return string
      */
-    function env($key = '', $default = null)
+    function env(string $key, $default = null)
     {
+        // Load environment variables
+        $environment = Dotenv::createImmutable(base_path());
+        $environment->load();
         return $_ENV[$key] ?? $default;
     }
 }
@@ -21,7 +26,7 @@ if (!function_exists('base_path')) {
      * @param  string  $path
      * @return string
      */
-    function base_path($path = '')
+    function base_path(string $path = '')
     {
         return __DIR__ . "/../../{$path}";
     }
@@ -34,7 +39,7 @@ if (!function_exists('config_path')) {
      * @param  string  $path
      * @return string
      */
-    function config_path($path = '')
+    function config_path(string $path = '')
     {
         return base_path() . 'config' . ($path ? '/' . $path : $path);
     }
@@ -47,9 +52,22 @@ if (!function_exists('resource_path')) {
      * @param  string  $path
      * @return string
      */
-    function resource_path($path = '')
+    function resource_path(string $path = '')
     {
         return base_path() . 'resources' . ($path ? '/' . $path : $path);
+    }
+}
+
+if (!function_exists('database_path')) {
+    /**
+     * Get the path to the database directory.
+     *
+     * @param  string  $path
+     * @return string
+     */
+    function database_path(string $path = '')
+    {
+        return base_path() . 'database' . ($path ? '/' . $path : $path);
     }
 }
 
@@ -60,7 +78,7 @@ if (!function_exists('public_path')) {
      * @param  string  $path
      * @return string
      */
-    function public_path($path = '')
+    function public_path(string $path = '')
     {
         return base_path() . 'public' . ($path ? '/' . $path : $path);
     }
@@ -73,7 +91,7 @@ if (!function_exists('routes_path')) {
      * @param  string  $path
      * @return string
      */
-    function routes_path($path = '')
+    function routes_path(string $path = '')
     {
         return base_path() . 'routes' . ($path ? '/' . $path : $path);
     }
@@ -86,7 +104,7 @@ if (!function_exists('storage_path')) {
      * @param  string  $path
      * @return string
      */
-    function storage_path($path = '')
+    function storage_path(string $path = '')
     {
         return base_path() . 'storage' . ($path ? '/' . $path : $path);
     }
