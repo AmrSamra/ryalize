@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Infrastructure\Validator;
+use Exception;
 use Slim\Psr7\Response;
 use Psr\Http\Message\ResponseInterface as IResponse;
 use Psr\Http\Message\ServerRequestInterface as IRequest;
@@ -18,7 +20,6 @@ class Middleware
     protected $except = [
         //
     ];
-
 
     protected $exception = [
         HttpBadRequestException::class
@@ -40,13 +41,15 @@ class Middleware
      * @param \Psr\Http\Message\ServerRequestInterface  $request
      * @return \Psr\Http\Message\ResponseInterface
      */
-    protected function handle(IRequest $request): IResponse
+    protected function handle(IRequest $request, string $message = 'Bad Request', int $code = 400): IResponse
     {
         $response = new Response();
+        // check if request header is json
         if ($this->expectJson($request)) {
-            return json($response, 'Bad Request', [], 400);
+            return json($response, $message, [], $code);
         }
-        throw new HttpBadRequestException($request);
+        // throw an exception
+        throw new Exception($message, $code);
     }
 
     /**
@@ -68,8 +71,13 @@ class Middleware
      */
     protected function inExceptArray(IRequest $request): bool
     {
+        // Get the current path
         $path = $request->getUri()->getPath();
+
+        // Convert the path to array
         $path = Self::arrayUrl($path);
+
+        // Check if the path is in except array
         foreach ($this->except as $except) {
             $except = Self::arrayUrl($except);
             if (Self::isMatch($path, $except)) {
@@ -78,6 +86,51 @@ class Middleware
         }
 
         return false;
+    }
+
+    /**
+     * Determine if the request is sending JSON.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface  $request
+     * @return bool
+     */
+    protected function isJson(IRequest $request): bool
+    {
+        return $request->getHeader('content-type') == ['application/json'];
+    }
+
+    /**
+     * Get the token from the request after validation.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface  $request
+     * @return string|null
+     */
+    protected function getToken(IRequest $request): ?string
+    {
+        // Get the token from the request
+        [$token] = $request->getHeader('Authorization');
+
+        // Check if the token is valid
+        if (preg_match('/Bearer\s(\S+)/', $token)) {
+            $token = explode(' ', $token);
+
+            // clean the token
+            $token = trim($token[1]);
+
+            // validate the token
+            $errors = Validator::validate([
+                'token' => $token
+            ], [
+                'token' => 'required|alpha_num|exists:auth_tokens'
+            ]);
+
+            // return the token if no errors
+            if (!count($errors)) {
+                return $token;
+            }
+        }
+        // return null if token is invalid
+        return null;
     }
 
     /**

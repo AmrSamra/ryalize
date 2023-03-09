@@ -15,11 +15,25 @@ class ApiMiddleware extends Middleware
      */
     public function __invoke(IRequest $request, IRequestHandler $handler): IResponse
     {
+        // check if request is not in except array
         if (!$this->inExceptArray($request)) {
+            // check if request is not expecting json
             if (!$this->expectJson($request)) {
+                // return 400 bad request
                 return $this->handle($request);
             }
         }
+        // check if request is json
+        if ($this->isJson($request)) {
+            // parse json body
+            $contents = json_decode(file_get_contents('php://input'), true);
+            // check if json is valid
+            if (json_last_error() === JSON_ERROR_NONE) {
+                // set parsed body
+                $request = $request->withParsedBody($contents);
+            }
+        }
+        // return response
         return $handler->handle($request);
     }
 }
