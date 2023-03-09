@@ -39,6 +39,7 @@ return [
         'id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY',
         'user_id INT(11) UNSIGNED NOT NULL',
         'location_id INT(11) UNSIGNED NOT NULL',
+        'type VARCHAR(255) NOT NULL',
         'amount FLOAT(8,3) NOT NULL',
         'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
         'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',

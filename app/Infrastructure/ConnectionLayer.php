@@ -23,7 +23,7 @@ class ConnectionLayer extends PDO
      * @param string $statement
      * @return array
      */
-    public function getOne(string $statement): array
+    public function getOne(string $statement): array|bool
     {
         $stmt = $this->execute($statement);
         return $stmt->fetch();

@@ -1,5 +1,6 @@
 <?php
 
+use App\Infrastructure\Model;
 use Psr\Http\Message\ResponseInterface as Response;
 
 if (!function_exists('dd')) {
@@ -11,8 +12,26 @@ if (!function_exists('dd')) {
      */
     function dd(...$args): void
     {
-        $print = array_map(function ($arg) {
-            if (is_object($arg)) {
+        $print = ddMapArray($args);
+        echo '<pre>', json_encode($print, JSON_PRETTY_PRINT), '</pre>';
+
+        die();
+    }
+
+    /**
+     * Map array
+     *
+     * @param  array  $array
+     * @return array
+     */
+    function ddMapArray(array $array): array
+    {
+        return array_map(function ($arg) {
+            if ($arg instanceof Model) {
+                return $arg->toArray();
+            } else if (is_array($arg)) {
+                return ddMapArray($arg);
+            } else if (is_object($arg)) {
                 try {
                     $object = serialize($arg);
                 } catch (\Exception $e) {
@@ -21,10 +40,7 @@ if (!function_exists('dd')) {
                 return $object;
             }
             return $arg;
-        }, $args);
-        echo '<pre>', json_encode($print, JSON_PRETTY_PRINT), '</pre>';
-
-        die();
+        }, $array);
     }
 }
 
