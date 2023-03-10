@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Infrastructure\Request;
 
-class RegisterRequest extends Request
+class UpdateRequest extends Request
 {
     /**
      * Get the validation rules that apply to the request.
@@ -13,9 +13,11 @@ class RegisterRequest extends Request
      */
     public function rules(): array
     {
+        $user = $this->parent->getAttribute('user');
+
         return [
-            'name'      => 'required|alpha_num|min:3',
-            'email'     => 'required|email|unique:users,email',
+            'name'      => 'required|alpha_num',
+            'email'     => 'required|email|unique:users,email,' . $user->id,
             'password'  => 'required|alpha_num|min:6'
         ];
     }

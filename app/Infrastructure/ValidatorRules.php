@@ -97,9 +97,13 @@ class ValidatorRules
      * @param string $column
      * @return array
      */
-    public static function unique(string $field, mixed $value, string $table, string $column): array
+    public static function unique(string $field, mixed $value, string $table, string $column, int $ignoreId = 0): array
     {
-        $result = !DB::table($table)->where([$column, '=', $value])->exists();
+        $exists = DB::table($table)->where([$column, '=', $value]);
+        if ($ignoreId) {
+            $exists->where(['id', '!=', $ignoreId]);
+        }
+        $result = !$exists->exists();
         return Self::response('unique', $result, $field);
     }
 
@@ -137,7 +141,7 @@ class ValidatorRules
      * @param mixed ...$attributes
      * @return array
      */
-    public static function response(string $role, bool $success, ...$attributes): array
+    public static function response(string $role, bool $success = true, ...$attributes): array
     {
         $message = null;
         if (!$success) {

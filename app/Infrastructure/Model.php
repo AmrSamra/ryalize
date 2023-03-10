@@ -60,7 +60,7 @@ abstract class Model extends Relations
      */
     public function save(): object|bool|null
     {
-        if (isset($this->id)) {
+        if ($this->id) {
             return $this->update($this->data);
         }
         return $this->create($this->data);
@@ -74,13 +74,14 @@ abstract class Model extends Relations
     public function update(array $data): bool
     {
         $fillable = [];
-        array_walk(array_keys($data), function (string $attribute) use ($data, &$fillable) {
+        $attributes = array_keys($data);
+        array_walk($attributes, function (string $attribute) use ($data, &$fillable) {
             if (in_array($attribute, $this->fillable)) {
                 $fillable[$attribute] = $data[$attribute];
             }
         });
         return $this->builder->where(['id', '=', $this->id])
-            ->update([$fillable]);
+            ->update($fillable);
     }
 
     /**

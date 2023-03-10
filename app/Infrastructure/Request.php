@@ -8,6 +8,8 @@ use Slim\Psr7\Request as Psr7Request;
 
 class Request extends Psr7Request
 {
+    protected Psr7Request $parent;
+
     public function __construct(Psr7Request $request)
     {
         $header = new Headers($request->getHeaders());
@@ -20,6 +22,7 @@ class Request extends Psr7Request
             $request->getBody(),
             $request->getUploadedFiles()
         );
+        $this->parent = $request;
         $this->parsedBody = json_decode($this->getBody()->getContents(), true);
         $this->validate();
     }
@@ -96,38 +99,14 @@ class Request extends Psr7Request
             $value = $data[$key] ?? null;
             foreach ($rules as $stringRule) {
                 $rule = explode(':', $stringRule);
-                switch ($rule[0]) {
-                    case 'required':
-                        $validator = ValidatorRules::required($key, $value);
-                        break;
-                    case 'string':
-                        $validator = ValidatorRules::string($key, $value);
-                        break;
-                    case 'email':
-                        $validator = ValidatorRules::email($key, $value);
-                        break;
-                    case 'number':
-                        $validator = ValidatorRules::number($key, $value);
-                        break;
-                    case 'alpha_num':
-                        $validator = ValidatorRules::alpha_num($key, $value);
-                        break;
-                    case 'min':
-                        $validator = ValidatorRules::min($key, $value, $rule[1]);
-                        break;
-                    case 'unique':
-                        $validator = ValidatorRules::unique($key, $value, $rule[1], $rule[2] ?? $key);
-                        break;
-                    case 'exists':
-                        $validator = ValidatorRules::exists($key, $value, $rule[1], $rule[2] ?? $key);
-                        break;
-                    case 'regex':
-                        $validator = ValidatorRules::regex($key, $value, $rule[1]);
-                        break;
-                    default:
-                        $validator = ValidatorRules::response($key, true);
-                        break;
+                $method = $rule[0];
+                $params = count($rule) > 1 ? explode(',', $rule[1]) : [];
+
+                if(!method_exists(ValidatorRules::class, $method)) {
+                    $method = 'response';
                 }
+                $validator = ValidatorRules::$method($key, $value, ...$params);
+
                 if (!$validator['success']) {
                     $errors[$key][] = $validator['message'];
                     continue;

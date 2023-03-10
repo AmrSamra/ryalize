@@ -7,6 +7,7 @@ use App\Models\AuthToken;
 use Psr\Http\Message\ResponseInterface as IResponse;
 use Psr\Http\Message\ServerRequestInterface as IRequest;
 use Psr\Http\Server\RequestHandlerInterface as IRequestHandler;
+use Slim\Psr7\Request;
 
 class AuthorizedMiddleware extends Middleware
 {
@@ -33,6 +34,7 @@ class AuthorizedMiddleware extends Middleware
                     // set token and user to request
                     $request = $request->withAttribute('token', $token->token);
                     $request = $request->withAttribute('user', $user);
+                    $this->container->set(Request::class, $request);
 
                     // return response
                     return $handler->handle($request);

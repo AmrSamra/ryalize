@@ -2,44 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use App\Models\User;
+use DI\Container;
+use Slim\Psr7\Request;
 
 class Controller
 {
-    public function __invoke(Request $request, Response $response, ...$args): Response
-    {
-        $response->getBody()->write(":: invoke :: Home page ::");
-        return $response;
-    }
+    protected ?User $user = null;
 
-    public function index(Request $request, Response $response, ...$args): Response
-    {
-        $response->getBody()->write(":: index ::");
-        return $response;
-    }
+    protected Container $container;
 
-    public function show(Request $request, Response $response, ...$args): Response
-    {
-        $response->getBody()->write(":: show ::");
-        return $response;
-    }
+    protected ?Request $request = null;
 
-    public function store(Request $request, Response $response, ...$args): Response
+    public function __construct(Container $container)
     {
-        $response->getBody()->write(":: store ::");
-        return $response;
-    }
-
-    public function update(Request $request, Response $response, ...$args): Response
-    {
-        $response->getBody()->write(":: update ::");
-        return $response;
-    }
-
-    public function destroy(Request $request, Response $response, ...$args): Response
-    {
-        $response->getBody()->write(":: destroy ::");
-        return $response;
+        $this->container = $container;
+        try {
+            $request = $container->get(Request::class);
+        } catch (\Exception $e) {
+            // do nothing
+        }
+        if (isset($request)) {
+            $this->request = $request;
+            $user = $this->request->getAttribute('user');
+            if ($user) {
+                $this->user = $user;
+            }
+        }
     }
 }

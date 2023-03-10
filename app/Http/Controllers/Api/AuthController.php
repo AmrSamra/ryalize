@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Exceptions\ValidationException;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\UpdateRequest;
 use App\Models\User;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -51,10 +52,7 @@ class AuthController extends ApiController
      */
     public function logout(Request $request, Response $response, ...$args): Response
     {
-        $token = $request->getAttribute('token');
-        $user = $request->getAttribute('user');
-
-        $user->authTokens()->where('token', $token)->delete();
+        $this->user->authTokens()->where('token', $this->token)->delete();
 
         return json($response, "Logout Success");
     }
@@ -82,5 +80,35 @@ class AuthController extends ApiController
         return json($response, "Register Success", [
             'token' => $token->token
         ]);
+    }
+
+    /**
+     * Get my profile
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param array $args
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function profile(Request $request, Response $response, ...$args): Response
+    {
+        return json($response, "My Profile Retrieved", $this->user->toArray());
+    }
+
+    /**
+     * Update my profile
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param array $args
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function update(Request $request, Response $response, ...$args): Response
+    {
+        $inputs = (new UpdateRequest($request))->only('name', 'email', 'password');
+        $this->user->name = $inputs['name'];
+        $this->user->email = $inputs['email'];
+        $this->user->password = bcrypt($inputs['password']);
+        $this->user->save();
+
+        return json($response, "My Profile Updated", $this->user->toArray());
     }
 }

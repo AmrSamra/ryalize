@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Infrastructure\Validator;
+use DI\Container;
 use Psr\Http\Message\ResponseInterface as IResponse;
 use Psr\Http\Message\ServerRequestInterface as IRequest;
 use Psr\Http\Server\RequestHandlerInterface as IRequestHandler;
@@ -22,6 +23,19 @@ class Middleware
     protected $exception = [
         HttpBadRequestException::class
     ];
+
+    protected Container $container;
+
+    /**
+     * Create a new middleware instance.
+     *
+     * @param \DI\Container $container
+     * @return void
+     */
+    public function __construct(Container $container)
+    {
+        $this->container = $container;
+    }
 
     /**
      * @param \Psr\Http\Message\ServerRequestInterface $request
