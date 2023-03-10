@@ -2,10 +2,17 @@
 
 use App\Http\Kernel;
 use DI\Container;
-use DI\Bridge\Slim\Bridge as AppFactory;
+use Slim\Factory\AppFactory;
 
-// Create PHP-DI Container instance
-$app = AppFactory::create(new Container);
+// Create Container using PHP-DI
+$container = new Container();
+
+// Set container to create App with on AppFactory
+AppFactory::setContainer($container);
+
+$app = AppFactory::create();
+
+require __DIR__ . '/../bootstrap/env.php';
 
 // Load configuration
 $kernel = new Kernel($app);

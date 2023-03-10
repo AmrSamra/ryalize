@@ -264,7 +264,9 @@ class DB
 
         $statement = $this->buildStatement();
 
-        return $this->connection->getOne($statement) ?? null;
+        $result = $this->connection->getOne($statement);
+
+        return $result ?: null;
     }
 
     /**

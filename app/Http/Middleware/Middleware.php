@@ -3,8 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Infrastructure\Validator;
-use Exception;
-use Slim\Psr7\Response;
 use Psr\Http\Message\ResponseInterface as IResponse;
 use Psr\Http\Message\ServerRequestInterface as IRequest;
 use Psr\Http\Server\RequestHandlerInterface as IRequestHandler;
@@ -33,23 +31,6 @@ class Middleware
     public function __invoke(IRequest $request, IRequestHandler $handler): IResponse
     {
         return $handler->handle($request);
-    }
-
-    /**
-     * Handle an incoming request.
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface  $request
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    protected function handle(IRequest $request, string $message = 'Bad Request', int $code = 400): IResponse
-    {
-        $response = new Response();
-        // check if request header is json
-        if ($this->expectJson($request)) {
-            return json($response, $message, [], $code);
-        }
-        // throw an exception
-        throw new Exception($message, $code);
     }
 
     /**
@@ -108,10 +89,12 @@ class Middleware
     protected function getToken(IRequest $request): ?string
     {
         // Get the token from the request
-        [$token] = $request->getHeader('Authorization');
+        $authorization = $request->getHeader('Authorization');
+
+        $token = $authorization[0] ?? null;
 
         // Check if the token is valid
-        if (preg_match('/Bearer\s(\S+)/', $token)) {
+        if ($token && preg_match('/Bearer\s(\S+)/', $token)) {
             $token = explode(' ', $token);
 
             // clean the token

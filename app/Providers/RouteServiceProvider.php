@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Infrastructure\Middleware;
 use App\Infrastructure\Route;
 use Slim\Routing\RouteCollectorProxy;
 

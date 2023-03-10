@@ -5,6 +5,7 @@ use App\Infrastructure\Connection;
 echo "--- :: Migrating :: ---" . PHP_EOL . PHP_EOL;
 
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../bootstrap/env.php';
 
 $tables = include database_path('db_tables.php');
 

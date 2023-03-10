@@ -29,7 +29,11 @@ class Route
     public static function __callStatic(string $method, array $parameters = [])
     {
         $app = Self::$app;
-        [$prefix, $callback, $options] = $parameters;
+        [$prefix, $callback] = $parameters;
+
+        if (count($parameters) == 3) {
+            $options = $parameters[2];
+        }
 
 
         if ($method == 'resource') {

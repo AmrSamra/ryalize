@@ -137,7 +137,7 @@ class ValidatorRules
      * @param mixed ...$attributes
      * @return array
      */
-    protected static function response(string $role, bool $success, ...$attributes): array
+    public static function response(string $role, bool $success, ...$attributes): array
     {
         $message = null;
         if (!$success) {

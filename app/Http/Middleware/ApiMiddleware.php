@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Infrastructure\Exception;
 use Psr\Http\Message\ResponseInterface as IResponse;
 use Psr\Http\Message\ServerRequestInterface as IRequest;
 use Psr\Http\Server\RequestHandlerInterface as IRequestHandler;
@@ -19,8 +20,8 @@ class ApiMiddleware extends Middleware
         if (!$this->inExceptArray($request)) {
             // check if request is not expecting json
             if (!$this->expectJson($request)) {
-                // return 400 bad request
-                return $this->handle($request);
+                // throw 400 bad request
+                throw new Exception($request);
             }
         }
         // check if request is json

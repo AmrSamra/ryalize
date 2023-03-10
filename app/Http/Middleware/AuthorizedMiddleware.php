@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\UnauthorizeException;
 use App\Models\AuthToken;
 use Psr\Http\Message\ResponseInterface as IResponse;
 use Psr\Http\Message\ServerRequestInterface as IRequest;
@@ -38,7 +39,7 @@ class AuthorizedMiddleware extends Middleware
                 }
             }
         }
-        // return 401 unauthorized
-        return $this->handle($request, 'Unauthorized', 401);
+        // throw 401 unauthorized
+        throw new UnauthorizeException($request);
     }
 }

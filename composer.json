@@ -16,6 +16,7 @@
         "psr-15"
     ],
     "require": {
+        "php": "^8.0",
         "slim/slim": "4.*",
         "slim/psr7": "^1.6",
         "nyholm/psr7": "^1.5",
@@ -45,10 +46,15 @@
         "db:refresh": "php ./database/db_drop.php && php ./database/db_migrate.php",
         "db:seed": "php ./database/db_seed.php",
         "db:boot": "php ./database/db_drop.php && php ./database/db_migrate.php && php ./database/db_seed.php",
+        "test": "./vendor/bin/phpunit tests --display-warnings --display-notices --testdox",
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ]
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "require-dev": {
+        "fakerphp/faker": "^1.21",
+        "phpunit/phpunit": "^10.0"
+    }
 }

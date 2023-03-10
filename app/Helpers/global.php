@@ -44,6 +44,34 @@ if (!function_exists('dd')) {
     }
 }
 
+if (!function_exists('bcrypt')) {
+    /**
+     * Hash the given value.
+     *
+     * @param  string  $value
+     * @param  array  $options
+     * @return string
+     */
+    function bcrypt(string $value, array $options = []): string
+    {
+        return password_hash($value, PASSWORD_BCRYPT, $options);
+    }
+}
+
+if (!function_exists('bcrypt_check')) {
+    /**
+     * Check the given plain value against a hash.
+     *
+     * @param  string  $value
+     * @param  string  $hashedValue
+     * @return bool
+     */
+    function bcrypt_check(string $value, string $hashedValue): bool
+    {
+        return password_verify($value, $hashedValue);
+    }
+}
+
 if (!function_exists('class_basename')) {
     /**
      * Get the class "basename" of the given object / class.
@@ -108,7 +136,7 @@ if (!function_exists('json')) {
     {
         $body = [
             'message'   => $message,
-            $code == 200 ? 'data' : 'error' => $data,
+            'data'      => $data,
         ];
 
         $response->getBody()->write(json_encode($body));

@@ -5,11 +5,11 @@ use App\Infrastructure\Connection;
 echo "--- :: Seeding :: ---" . PHP_EOL . PHP_EOL;
 
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../bootstrap/env.php';
 
 $tables = include database_path('db_seeders.php');
 
 $connection = Connection::connect();
-
 
 // Seed the tables with fake data
 foreach ($tables as $table => $rows) {

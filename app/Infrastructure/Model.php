@@ -44,13 +44,26 @@ abstract class Model extends Relations
     public function create(array $data): object
     {
         $fillable = [];
-        array_walk(array_keys($data), function (string $attribute) use ($data, &$fillable) {
+        $attributes = array_keys($data);
+        array_walk($attributes, function (string $attribute) use ($data, &$fillable) {
             if (in_array($attribute, $this->fillable)) {
                 $fillable[$attribute] = $data[$attribute];
             }
         });
         $id = $this->builder()->insert([$fillable]);
         return Self::find($id);
+    }
+
+    /**
+     * update or create model
+     * @return object|bool|null
+     */
+    public function save(): object|bool|null
+    {
+        if (isset($this->id)) {
+            return $this->update($this->data);
+        }
+        return $this->create($this->data);
     }
 
     /**

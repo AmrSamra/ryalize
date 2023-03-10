@@ -9,7 +9,7 @@ return [
             'id' => $i,
             'name' => 'User ' . $i,
             'email' => 'user' . $i . '@example.com',
-            'password' => password_hash('password', PASSWORD_BCRYPT),
+            'password' => bcrypt('password'),
         ];
     }, range(1, 10)),
 

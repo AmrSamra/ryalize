@@ -1,7 +1,5 @@
 <?php
 
-use Dotenv\Dotenv;
-
 if (!function_exists('env')) {
     /**
      * Gets the value of an environment variable.
@@ -12,9 +10,6 @@ if (!function_exists('env')) {
      */
     function env(string $key, $default = null)
     {
-        // Load environment variables
-        $environment = Dotenv::createImmutable(base_path());
-        $environment->load();
         return $_ENV[$key] ?? $default;
     }
 }
