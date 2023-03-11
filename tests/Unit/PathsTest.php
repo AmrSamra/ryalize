@@ -25,7 +25,7 @@ class PathsTest extends TestCase
 
     public function testResourcePath()
     {
-        $this->assertFileExists(resource_path('views/index.blade.php'));
+        $this->assertFileExists(resource_path('views/index.html'));
     }
 
     public function testDatabasePath()

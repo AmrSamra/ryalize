@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\HomeController;
 use App\Infrastructure\Route;
 
-Route::get('home', [Controller::class, 'index'])->setName('home');
+Route::get('home', [HomeController::class, 'index'])->setName('home');

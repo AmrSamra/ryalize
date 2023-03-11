@@ -1,0 +1,572 @@
+<!-- @format -->
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Ryalize</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+            crossorigin="anonymous"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+            rel="stylesheet"
+        />
+        <style>
+            .select2-selection__rendered {
+                line-height: 31px !important;
+            }
+            .select2-container .select2-selection--single {
+                height: 35px !important;
+            }
+            .select2-selection__arrow {
+                height: 34px !important;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app" class="container my-2">
+            <sub>Task</sub>
+            <h1>Ryalize +100K Transactions Query</h1>
+            <sup>by: Amr Samra</sup>
+            <div class="row my-5">
+                <div v-if="user" class="col-12 border rounded">
+                    <h2>My Profile</h2>
+                    <span class="d-block">
+                        <strong>ID: </strong> {{user.id}}
+                    </span>
+                    <span class="d-block">
+                        <strong>Name: </strong> {{user.name}}
+                    </span>
+                    <span class="d-block">
+                        <strong>Email: </strong> {{user.email}}
+                    </span>
+                    <span class="d-block">
+                        <strong>Joined At: </strong> {{user.created_at}}
+                    </span>
+                </div>
+                <div v-if="back" class="col-12 mt-5">
+                    <button
+                        class="btn btn-warning"
+                        @click="routeTo(back)"
+                        :disabled="loading"
+                    >
+                        Back
+                    </button>
+                </div>
+            </div>
+            <div v-if="route == 'login'" class="row my-5">
+                <h2>Login Form</h2>
+                <div class="col-12 my-2">
+                    <div class="form-group my-2">
+                        <label class="d-block"
+                            >Email | For Test: user@test.com</label
+                        >
+                        <input
+                            type="email"
+                            class="form-control"
+                            v-model="hold.login.email"
+                            placeholder="email@example.com"
+                        />
+                        <span class="text-danger"
+                            >{{hold.login.errors.email}}</span
+                        >
+                    </div>
+                </div>
+                <div class="col-12 my-2">
+                    <div class="form-group my-2">
+                        <label class="d-block"
+                            >Password | For Test: password</label
+                        >
+                        <input
+                            type="password"
+                            class="form-control"
+                            v-model="hold.login.password"
+                            placeholder="password"
+                        />
+                        <span class="text-danger"
+                            >{{hold.login.errors.password}}</span
+                        >
+                    </div>
+                </div>
+                <div class="col-12">
+                    <button
+                        class="btn btn-primary"
+                        @click="login()"
+                        :disabled="loading"
+                    >
+                        Submit
+                    </button>
+                    <span class="mx-5">Or</span>
+                    <button
+                        class="btn btn-sm btn-success"
+                        @click="routeTo('register')"
+                        :disabled="loading"
+                    >
+                        Register
+                    </button>
+                    <p class="text-danger">{{hold.login.errors.message}}</p>
+                </div>
+            </div>
+            <div v-if="route == 'register'" class="row my-5">
+                <h2>Register Form</h2>
+                <div class="col-12 my-2">
+                    <div class="form-group my-2">
+                        <label class="d-block">Name</label>
+                        <input
+                            type="name"
+                            class="form-control"
+                            v-model="hold.register.name"
+                            placeholder="John Doe"
+                        />
+                        <span class="text-danger"
+                            >{{hold.register.errors.name}}</span
+                        >
+                    </div>
+                </div>
+                <div class="col-12 my-2">
+                    <div class="form-group my-2">
+                        <label class="d-block">Email</label>
+                        <input
+                            type="email"
+                            class="form-control"
+                            v-model="hold.register.email"
+                            placeholder="email@example.com"
+                        />
+                        <span class="text-danger"
+                            >{{hold.register.errors.email}}</span
+                        >
+                    </div>
+                </div>
+                <div class="col-12 my-2">
+                    <div class="form-group my-2">
+                        <label class="d-block">Password</label>
+                        <input
+                            type="password"
+                            class="form-control"
+                            v-model="hold.register.password"
+                            placeholder="password"
+                        />
+                        <span class="text-danger"
+                            >{{hold.register.errors.password}}</span
+                        >
+                    </div>
+                </div>
+                <div class="col-12">
+                    <button
+                        class="btn btn-success"
+                        @click="register()"
+                        :disabled="loading"
+                    >
+                        Submit
+                    </button>
+                    <span class="mx-5">Or</span>
+                    <button
+                        class="btn btn-sm btn-primary"
+                        @click="routeTo('login')"
+                        :disabled="loading"
+                    >
+                        Login
+                    </button>
+                    <p class="text-danger">{{hold.register.errors.message}}</p>
+                </div>
+            </div>
+            <div v-if="route == 'transactions'" class="row my-5">
+                <h2>My Transactions</h2>
+                <div class="col-8">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Amount</th>
+                                <th scope="col">Created At</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="transaction in transactions">
+                                <th scope="row">{{transaction.id}}</th>
+                                <td>{{transaction.type}}</td>
+                                <td>{{transaction.amount}}</td>
+                                <td>{{transaction.created_at}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-4 border rounded">
+                    <div v-if="metadata" class="col-12">
+                        <h4>Metadata</h4>
+                        <span class="d-block"
+                            >Total Results: {{ metadata?.total }}</span
+                        >
+                        <span class="d-block"
+                            >Per Page: {{ metadata?.limit }}</span
+                        >
+                        <span class="d-block"
+                            >Current Page: {{ metadata?.page }}</span
+                        >
+                        <span class="d-block"
+                            >Total Pages: {{ metadata?.pages }}</span
+                        >
+                    </div>
+                    <hr />
+                    <button
+                        class="btn btn-sm btn-primary mx-2"
+                        :disabled="loading || !metadata?.prev"
+                        @click="loadTransactions(metadata?.prev)"
+                    >
+                        Prev
+                    </button>
+                    <button
+                        class="btn btn-sm btn-primary mx-2"
+                        :disabled="loading || !metadata?.next"
+                        @click="loadTransactions(metadata?.next)"
+                    >
+                        Next
+                    </button>
+                    <hr />
+                    <div class="col-12">
+                        <h4>Filters</h4>
+                        <div class="form-group my-2">
+                            <label class="d-block">Limit</label>
+                            <select
+                                class="form-control"
+                                v-model="hold.transactions.limit"
+                                @change="loadTransactions(1)"
+                            >
+                                <option
+                                    :value="20"
+                                    :selected="hold.transactions.limit == 20"
+                                >
+                                    {{ 20 }}
+                                </option>
+                                <option
+                                    :value="50"
+                                    :selected="hold.transactions.limit == 50"
+                                >
+                                    {{ 50 }}
+                                </option>
+                                <option
+                                    :value="100"
+                                    :selected="hold.transactions.limit == 100"
+                                >
+                                    {{ 100 }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group my-2">
+                            <label class="d-block">City</label>
+                            <select
+                                class="form-control"
+                                v-model="hold.transactions.city"
+                                @change="loadTransactions(1)"
+                            >
+                                <option
+                                    value=""
+                                    :selected="hold.transactions.city == ''"
+                                >
+                                    All
+                                </option>
+                                <option
+                                    v-for="i in range(1, 11)"
+                                    :value="'City'+i"
+                                    :selected="hold.transactions.city == 'City'+i"
+                                >
+                                    {{ 'City ' + i }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group my-2">
+                            <label class="d-block">Block</label>
+                            <select
+                                class="form-control"
+                                v-model="hold.transactions.block"
+                                @change="loadTransactions(1)"
+                            >
+                                <option
+                                    value=""
+                                    :selected="hold.transactions.block == ''"
+                                >
+                                    All
+                                </option>
+                                <option
+                                    v-for="i in range(111, 121)"
+                                    :value="i"
+                                    :selected="hold.transactions.block == i"
+                                >
+                                    {{ i }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group my-2">
+                            <label class="d-block">Type</label>
+                            <select
+                                class="form-control"
+                                v-model="hold.transactions.type"
+                                @change="loadTransactions(1)"
+                            >
+                                <option
+                                    value=""
+                                    :selected="hold.transactions.type == ''"
+                                >
+                                    All
+                                </option>
+                                <option
+                                    value="deposit"
+                                    :selected="hold.transactions.type == 'deposit'"
+                                >
+                                    Deposit
+                                </option>
+                                <option
+                                    value="withdrawal"
+                                    :selected="hold.transactions.type == 'withdrawal'"
+                                >
+                                    Withdrawal
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+            integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
+            integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://code.jquery.com/jquery-3.6.3.js"
+            integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+            crossorigin="anonymous"
+        ></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+            const { createApp } = Vue;
+
+            createApp({
+                data() {
+                    return {
+                        endPoint: '/api',
+                        token: null,
+                        user: null,
+                        route: 'login',
+                        back: null,
+                        loading: false,
+                        hold: {
+                            login: {
+                                email: 'user@test.com',
+                                password: 'password',
+                                errors: {
+                                    message: null,
+                                    email: null,
+                                    password: null,
+                                },
+                            },
+                            register: {
+                                name: null,
+                                email: null,
+                                password: null,
+                                errors: {
+                                    message: null,
+                                    name: null,
+                                    email: null,
+                                    password: null,
+                                },
+                            },
+                            update: {
+                                name: null,
+                                email: null,
+                                password: null,
+                                errors: {
+                                    name: null,
+                                    email: null,
+                                    password: null,
+                                },
+                            },
+                            transactions: {
+                                city: '',
+                                block: '',
+                                type: '',
+                                page: 1,
+                                limit: 20,
+                            },
+                        },
+                        transactions: [],
+                        metadata: null,
+                    };
+                },
+                computed: {
+                    authorized() {
+                        return this.token && this.user?.id;
+                    },
+                },
+                methods: {
+                    async login() {
+                        this.clearErrors('login');
+                        const response = await this.post('auth/login', {
+                            email: this.hold.login.email,
+                            password: this.hold.login.password,
+                        });
+                        errors = response?.errors;
+                        data = response?.data;
+                        if (errors) {
+                            this.hold.login.errors.message = response.message;
+                            if (errors.email) {
+                                this.hold.login.errors.email =
+                                    errors.email?.[0];
+                            }
+                            if (errors.password) {
+                                this.hold.login.errors.password =
+                                    errors.password?.[0];
+                            }
+                        } else if (data) {
+                            this.token = data.token;
+                            await this.profile();
+                            this.routeTo('transactions');
+                        }
+                    },
+                    async register() {
+                        this.clearErrors('register');
+                        const response = await this.post('auth/register', {
+                            name: this.hold.register.name,
+                            email: this.hold.register.email,
+                            password: this.hold.register.password,
+                        });
+                        errors = response?.errors;
+                        data = response?.data;
+                        if (errors) {
+                            this.hold.register.errors.message =
+                                response.message;
+                            if (errors.name) {
+                                this.hold.register.errors.name =
+                                    errors.name?.[0];
+                            }
+                            if (errors.email) {
+                                this.hold.register.errors.email =
+                                    errors.email?.[0];
+                            }
+                            if (errors.password) {
+                                this.hold.register.errors.password =
+                                    errors.password?.[0];
+                            }
+                        } else if (data) {
+                            this.token = data.token;
+                            await this.profile();
+                            this.routeTo('transactions');
+                        }
+                    },
+                    async loadTransactions(page = 1) {
+                        const response = await this.get('transactions', {
+                            ...this.hold.transactions,
+                            page,
+                        });
+                        errors = response?.errors;
+                        data = response?.data;
+                        if (data && !errors) {
+                            this.transactions = data;
+                            this.metadata = response.metadata;
+                        }
+                    },
+                    routeTo(route) {
+                        if (
+                            ['transactions', 'update'].includes(route) &&
+                            !this.authorized
+                        ) {
+                            return;
+                        }
+                        if (route === 'transactions') {
+                            this.loadTransactions();
+                        }
+                        this.back = this.route;
+                        this.route = route;
+                    },
+                    async profile() {
+                        const response = await this.get('auth/profile');
+                        errors = response?.errors;
+                        data = response?.data;
+                        if (data && !errors) {
+                            this.user = data;
+                        }
+                    },
+                    async get(path, params) {
+                        let response = null;
+                        this.loading = true;
+                        const queryParams = new URLSearchParams(params);
+                        try {
+                            const res = await axios.get(
+                                `${
+                                    this.endPoint
+                                }/${path}?${queryParams.toString()}`,
+                                {
+                                    headers: {
+                                        Accept: 'application/json',
+                                        Authorization: 'Bearer ' + this.token,
+                                    },
+                                },
+                            );
+                            response = res.data;
+                        } catch (error) {
+                            response = error.response?.data;
+                        }
+                        this.loading = false;
+                        return response;
+                    },
+                    async post(path, body) {
+                        let response = null;
+                        this.loading = true;
+                        try {
+                            const res = await axios.post(
+                                `${this.endPoint}/${path}`,
+                                body,
+                                {
+                                    headers: {
+                                        Accept: 'application/json',
+                                        Authorization: 'Bearer ' + this.token,
+                                    },
+                                },
+                            );
+                            response = res.data;
+                        } catch (error) {
+                            response = error.response?.data;
+                        }
+                        this.loading = false;
+                        return response;
+                    },
+                    clearErrors(dir) {
+                        const obj = this.hold[dir].errors;
+                        for (const key in obj) {
+                            obj[key] = null;
+                        }
+                    },
+                    range(start, end) {
+                        return Array(end - start + 1)
+                            .fill()
+                            .map((_, idx) => start + idx);
+                    },
+                },
+                mounted() {
+                    console.log('mounted');
+                    if (this.authorized) {
+                        console.log('authorized');
+                        this.routeTo('transactions');
+                    }
+                },
+            }).mount('#app');
+        </script>
+    </body>
+</html>
