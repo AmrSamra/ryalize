@@ -9,11 +9,13 @@ class ValidatorRules
         'string'    => 'The :0 field must be a string',
         'email'     => 'The :0 field must be a valid email address.',
         'number'    => 'The :0 field must be a number.',
+        'integer'   => 'The :0 field must be an integer.',
         'alpha_num' => 'The :0 field must be only letters, numbers and spaces.',
         'min'       => 'The :0 field must be at least :1 characters.',
         'unique'    => 'The :0 field has been taken.',
         'exists'    => 'The :0 field is invalid.',
         'regex'     => 'The :0 field is invalid.',
+        'in'        => 'The :0 field is invalid.',
     ];
 
     /**
@@ -62,6 +64,18 @@ class ValidatorRules
     {
         $result = is_numeric($value);
         return Self::response('number', $result, $field);
+    }
+
+    /**
+     * Integer field
+     * @param string $field
+     * @param mixed $value
+     * @return array
+     */
+    public static function integer(string $field, mixed $value): array
+    {
+        $result = filter_var($value, FILTER_VALIDATE_INT);
+        return Self::response('integer', $result, $field);
     }
 
     /**
@@ -119,6 +133,19 @@ class ValidatorRules
     {
         $result = DB::table($table)->where([$column, '=', $value])->exists();
         return Self::response('exists', $result, $field);
+    }
+
+    /**
+     * In field
+     * @param string $field
+     * @param mixed $value
+     * @param array $values
+     * @return array
+     */
+    public static function in(string $field, mixed $value, ...$haystack): array
+    {
+        $result = in_array($value, $haystack);
+        return Self::response('in', $result, $field);
     }
 
     /**

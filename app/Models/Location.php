@@ -16,4 +16,13 @@ class Location extends Model
         'city',
         'block'
     ];
+
+    /**
+     * Get the user that owns the Location
+     * @return User
+     */
+    public function user(): User
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -102,14 +102,18 @@ class Request extends Psr7Request
                 $method = $rule[0];
                 $params = count($rule) > 1 ? explode(',', $rule[1]) : [];
 
-                if(!method_exists(ValidatorRules::class, $method)) {
+                if ($method === 'nullable' && empty($value)) {
+                    continue 2;
+                }
+
+                if (!method_exists(ValidatorRules::class, $method)) {
                     $method = 'response';
                 }
                 $validator = ValidatorRules::$method($key, $value, ...$params);
 
                 if (!$validator['success']) {
                     $errors[$key][] = $validator['message'];
-                    continue;
+                    continue 2;
                 }
             }
         }

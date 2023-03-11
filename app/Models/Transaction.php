@@ -12,7 +12,6 @@ class Transaction extends Model
 
     protected array $fillable = [
         'user_id',
-        'location_id',
         'amount',
         'type',
     ];
@@ -21,4 +20,13 @@ class Transaction extends Model
         'deposit',
         'withdrawal',
     ];
+
+    /**
+     * Get the user that owns the Transaction
+     * @return User
+     */
+    public function user(): User
+    {
+        return $this->belongsTo(User::class);
+    }
 }

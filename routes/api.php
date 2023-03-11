@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\TransactionsController;
 use App\Http\Middleware\AuthorizedMiddleware;
 use App\Infrastructure\Route;
 
@@ -14,3 +15,7 @@ Route::group('auth', function () {
         Route::put('update', [AuthController::class, 'update'])->setName('update');
     })->add(AuthorizedMiddleware::class);
 });
+
+Route::group('transactions', function () {
+    Route::get('', [TransactionsController::class, 'index'])->setName('transactions.index');
+})->add(AuthorizedMiddleware::class);

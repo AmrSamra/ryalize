@@ -2,36 +2,56 @@
 
 use App\Models\Transaction;
 
+$transactions = 111 * 1000;
+
 return [
     // 01_users_seeder
-    'users' => array_map(function ($i) {
-        return [
-            'id' => $i,
-            'name' => 'User ' . $i,
-            'email' => 'user' . $i . '@example.com',
-            'password' => bcrypt('password'),
-        ];
-    }, range(1, 10)),
+    'users' => [
+        [
+            'name'      => 'Test User',
+            'email'     => 'user@test.com',
+            'password'  => bcrypt('password'),
+        ],
+        ...array_map(function ($i) {
+            return [
+                'name'      => 'Test User ' . $i,
+                'email'     => 'user' . $i . '@test.com',
+                'password'  => bcrypt('password'),
+            ];
+        }, range(1, 10))
+    ],
 
     // 02_locations_seeder
-    'locations' => array_map(function ($i) {
-        return [
-            'id'        => $i,
-            'user_id'   => rand(1, 10),
-            'name'      => 'Location ' . $i,
-            'city'      => 'City ' . $i,
-            'block'     => rand(111, 999),
-        ];
-    }, range(1, 100000)),
+    'locations' => array_merge(
+        ...array_map(
+            function ($userId) {
+                $locations = [];
+                for ($i = 111; $i <= 121; $i++) {
+                    if (rand(0, 1) == 0) {
+                        $rand = rand(1, 11);
+                        $locations[] = [
+                            'user_id'   => $userId,
+                            'name'      => 'Location ' . $rand . ' ' . $userId,
+                            'city'      => 'City' . $rand,
+                            'block'     => $i,
+                        ];
+                    }
+                }
+                return $locations;
+            },
+            range(1, 11)
+        ),
+    ),
+
 
     // 03_transactions_seeder
     'transactions' => array_map(function ($i) {
         return [
-            'id'            => $i,
-            'user_id'       => rand(1, 10),
-            'location_id'   => rand(1, 10),
+            'user_id'       => rand(1, 11),
             'type'          => Transaction::$types[rand(0, 1)],
-            'amount'        => rand(100, 1000),
+            'amount'        => (float) (rand(1000, 9999) / 10),
+            'created_at'    => date('Y-m-d H:i:s', strtotime("-{$i} minute")),
+            'updated_at'    => date('Y-m-d H:i:s', strtotime("-{$i} minute")),
         ];
-    }, range(1, 1000000)),
+    }, range(1, $transactions)),
 ];

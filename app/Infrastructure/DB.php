@@ -31,6 +31,12 @@ class DB
         $this->connection = Connection::connect();
     }
 
+    public static function query(string $statement): array
+    {
+        $db = new static('');
+        return $db->connection->getAll($statement);
+    }
+
     /**
      * Set table name
      * @param string $table
@@ -80,6 +86,20 @@ class DB
         return $this;
     }
 
+    public function whereSql(string $sql, array $binding = []): DB
+    {
+        $where = $sql;
+        array_walk($binding, function ($value) use (&$where) {
+            $where = str_replace("?", $value, $where);
+        });
+
+        if (count($this->wheres) > 0) {
+            $where = "AND {$where}";
+        }
+        $this->wheres[] = $where;
+        return $this;
+    }
+
     /**
      * Filter with wheres
      * @param array ...$wheres
@@ -87,13 +107,15 @@ class DB
      */
     public function where(array ...$wheres): DB
     {
-        $wheres = $this->andMe($wheres);
+        if (count($wheres)) {
+            $wheres = $this->andMe($wheres);
 
-        if (count($this->wheres) > 0) {
-            $wheres = "AND {$wheres}";
+            if (count($this->wheres) > 0) {
+                $wheres = "AND {$wheres}";
+            }
+
+            $this->wheres[] = $wheres;
         }
-
-        $this->wheres[] = $wheres;
         return $this;
     }
 
@@ -104,13 +126,15 @@ class DB
      */
     public function orWhere(array ...$wheres): DB
     {
-        $wheres = $this->andMe($wheres);
+        if (count($wheres)) {
+            $wheres = $this->andMe($wheres);
 
-        if (count($this->wheres) > 0) {
-            $wheres = "OR {$wheres}";
+            if (count($this->wheres) > 0) {
+                $wheres = "OR {$wheres}";
+            }
+
+            $this->wheres[] = $wheres;
         }
-
-        $this->wheres[] = $wheres;
         return $this;
     }
 

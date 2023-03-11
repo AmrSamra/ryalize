@@ -132,16 +132,19 @@ if (!function_exists('json')) {
      * @param  int  $code
      * @return Response
      */
-    function json(Response $response, string $message = 'OK', array $data = [], int $code = 200): Response
+    function json(Response $response, string $message = 'OK', array $data = [], array $metadata = []): Response
     {
         $body = [
             'message'   => $message,
             'data'      => $data,
         ];
+        if (!empty($metadata)) {
+            $body['metadata'] = $metadata;
+        }
 
         $response->getBody()->write(json_encode($body));
         return $response
-            ->withStatus($code)
+            ->withStatus(200)
             ->withHeader('Content-Type', 'application/json');
     }
 }

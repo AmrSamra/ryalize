@@ -108,6 +108,27 @@ abstract class Model extends Relations
         return $this;
     }
 
+    public static function whereHasThrough(
+        string $relatedClass,
+        string $foreignKey,
+        array $wheres = [],
+    ): object {
+        $self = new static();
+        $related = new $relatedClass();
+
+        $selfTable = $self->table;
+        $relatedTable = $related->table;
+
+        return $self->builder->whereExists(
+            $related->builder->whereSql(
+                "{$relatedTable}.{$foreignKey} = {$selfTable}.{$foreignKey}"
+            )
+                ->where(...$wheres)
+                ->toSql(),
+            ''
+        );
+    }
+
     /**
      * Set where in clause
      * @param string $column
@@ -179,6 +200,17 @@ abstract class Model extends Relations
             }
         }
         return $data;
+    }
+
+    public function toSql(): string
+    {
+        return $this->builder->toSql();
+    }
+
+    public function whereSql(string $sql, array $bindings = []): object
+    {
+        $this->builder->whereSql($sql, $bindings);
+        return $this;
     }
 
     /**
