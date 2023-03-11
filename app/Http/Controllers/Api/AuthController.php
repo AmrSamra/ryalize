@@ -72,7 +72,11 @@ class AuthController extends ApiController
         $inputs = $request->only('name', 'email', 'password');
 
         // Create user
-        $user = (new User($inputs))->save();
+        $user = (new User([
+            'name'      => $inputs['name'],
+            'email'     => $inputs['email'],
+            'password'  => bcrypt($inputs['password'])
+        ]))->save();
 
         // Generate token
         $token = $user->generateToken();
